@@ -1,23 +1,40 @@
-# Define project specific obfuscation rules here.
-# You can include the obfuscation configuration files in the current module's build-profile.json5.
+# 混淆规则。
+# 详见 https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/source-obfuscation
 #
-# For more details, see
-#   https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/source-obfuscation
+# 这是**组件库**，对外 API 名必须保留，否则使用者拿到的声明文件里
+# 导出会变成混淆后的单字母（实测过：入口会变成 `export { i } from "./src/main/ets/d/e"`），
+# 调用方直接编译不过。
+#
+# 因此这里**不能**开启：
+#   -enable-export-obfuscation   会把导出名混淆掉
+#   -enable-filename-obfuscation 会把文件名混淆掉（入口 Index 也会被改名）
+#   -enable-toplevel-obfuscation 会把顶层作用域名混淆掉
 
-# Obfuscation options:
-# -disable-obfuscation: disable all obfuscations
-# -enable-property-obfuscation: obfuscate the property names
-# -enable-toplevel-obfuscation: obfuscate the names in the global scope
-# -compact: remove unnecessary blank spaces and all line feeds
-# -remove-log: remove all console.* statements
-# -print-namecache: print the name cache that contains the mapping from the old names to new names
-# -apply-namecache: reuse the given cache file
+# 字符串属性名（动态访问用）不能混淆，否则运行期按名字取属性会失败
+-keep-property-name
+  $$,
+  componentName
 
-# Keep options:
-# -keep-property-name: specifies property names that you want to keep
-# -keep-global-name: specifies names that you want to keep in the global scope
+# 保留所有顶层声明名，避免组件类名被改
+-keep-global-name
+  UniList,
+  UniGroupList,
+  UniGrid,
+  UniWaterfall,
+  UniSwipeItem,
+  UniState,
+  UniLoadState,
+  UniSkeletonVariant,
+  UniTheme,
+  UniTexts,
+  UniRes,
+  UniSwipeAction,
+  UniSwipeActionHandler,
+  IUniSection,
+  UniItemKey,
+  UniFlowHeight
 
+# 压缩空白，移除日志（保留导出名）
 -enable-property-obfuscation
--enable-toplevel-obfuscation
--enable-filename-obfuscation
--enable-export-obfuscation
+-compact
+-remove-log

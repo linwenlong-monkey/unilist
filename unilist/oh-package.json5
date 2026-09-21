@@ -1,9 +1,25 @@
 {
   "name": "unilist",
   "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "HarmonyOS 列表组件库。组件接管滚动容器，内置下拉刷新、触底加载、空态/错误态/骨架屏与深色模式。",
   "main": "Index.ets",
-  "author": "",
+  "author": {
+    "name": "linwenlong",
+    "email": "linwenlong-monkey@users.noreply.github.com",
+    "url": "https://github.com/linwenlong-monkey"
+  },
   "license": "Apache-2.0",
+  "keywords": [
+    "unilist",
+    "list",
+    "har",
+    "arkts",
+    "ui",
+    "component",
+    "refresh",
+    "waterfall"
+  ],
+  "repository": "https://github.com/linwenlong-monkey/unilist",
+  "homepage": "https://github.com/linwenlong-monkey/unilist",
   "dependencies": {}
 }
