@@ -13,3 +13,6 @@ export { IUniSection, UniSwipeAction, UniItemKey } from './src/main/ets/componen
 export { UniTheme } from './src/main/ets/components/theme/UniTheme';
 export { UniTexts } from './src/main/ets/components/theme/UniTexts';
 export { UniRes } from './src/main/ets/components/theme/UniRes';
+
+// 侧滑 / 拖拽相关类型
+export { UniSwipeActionHandler } from './src/main/ets/components/UniSwipeItem';

@@ -1,6 +1,7 @@
 import { UniList, UniSwipeAction, UniTheme, UniTexts } from 'unilist';
 import { FeedVO, makeFeed } from '../../model/FeedModel';
 import { CardRow } from './CardRow';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 /** 列表演示：下拉刷新 + 触底加载 + 侧滑 + 拖拽 + 浮动按钮。 */
 @Component
@@ -114,6 +115,10 @@ export struct ListDemo {
               } else {
                 this.tip = `点了「${action.text}」`;
               }
+            },
+            onDragDiagnostic: (phase: string, from: number, to: number) => {
+              hilog.info(0x9999, 'DRAG', 'phase=%{public}s from=%{public}d to=%{public}d', phase, from, to);
+              this.tip = `拖拽事件: ${phase}`;
             },
             onItemMove: (from: number, to: number) => {
               const copy: FeedVO[] = this.items.slice();

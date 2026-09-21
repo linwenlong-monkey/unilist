@@ -8,6 +8,8 @@ import { GroupDemo } from './gallery/GroupDemo';
 import { SwipeDemo } from './gallery/SwipeDemo';
 import { LazyDemo } from './gallery/LazyDemo';
 import { FeedPage } from './real/FeedPage';
+import { TripDetailPage } from './real/TripDetailPage';
+import { TripVO } from '../model/TripModel';
 
 @Entry
 @Component
@@ -31,13 +33,18 @@ struct Index {
   /**
    * 导航目的地分发。
    *
-   * 只声明用得到的 `name`——`navDestination` 的完整签名是 `(name, param: unknown)`，
-   * 而 ArkTS 禁用 `unknown`。少写一个参数是合法的（函数参数逆变），
-   * 顺带也避免了主题要靠第三个参数传进来。
+   * ⚠️ `navDestination` **只能注册一个 builder**，注册第二个会把第一个覆盖掉，
+   * 被覆盖的那些路由会静默渲染成空节点（日志：`can't find target destination by index,
+   * create empty node`）。所以所有目的地都必须在这一个里分发。
+   *
+   * 第二个参数写 `param: object` 而不是 `unknown`——ArkTS 禁用 `unknown`，
+   * 而 `object` 既能接住 `pushPath` 传的 `Record`，也允许 `as` 成具体类型。
    */
   @Builder
-  pageMap(name: string) {
-    if (name === 'list') {
+  pageMap(name: string, param: object) {
+    if (name === 'tripDetail') {
+      TripDetailPage({ theme: this.theme, trip: param as TripVO })
+    } else if (name === 'list') {
       ListDemo({ theme: this.theme })
     } else if (name === 'states') {
       StateDemo({ theme: this.theme })
@@ -55,6 +62,7 @@ struct Index {
       FeedPage({ theme: this.theme })
     }
   }
+
 
   build() {
     Navigation(this.pathStack) {
