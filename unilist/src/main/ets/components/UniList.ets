@@ -148,11 +148,14 @@ export struct UniList {
    */
   @BuilderParam headerBuilder?: () => void;
   /**
-   * 紧跟头部、**吸顶**的区块。
+   * 紧跟头部、**吸顶**的区块（如搜索框）。滚动时贴住顶部，直到列表滚到底。
    *
-   * 用 `ListItemGroup` 的 header 实现（`ListItem.sticky` 在 API 9 就废弃了，
-   * 且 `List.sticky` 只对 `ListItemGroup` 的 header/footer 生效）——
-   * 内部会为它单开一个「只有一个 header、没有 body」的组。
+   * 实现方式是把它作为**唯一一个** `ListItemGroup` 的 header，所有内容装在这个组里。
+   * 因为 `List.sticky` 是「每个组各自吸自己的 header」，只要有第二个带 header 的组，
+   * 它的 header 就会被顶替——所以传了本参数时，分组头会退化成普通标题行
+   * （不再各自吸顶），以换取吸顶层稳定贴顶。
+   *
+   * 与 `dataSource`（LazyForEach）不兼容，该场景下会被忽略。
    */
   @BuilderParam stickyHeaderBuilder?: () => void;
   @BuilderParam skeletonBuilder?: () => void;
@@ -339,8 +342,9 @@ export struct UniList {
     if (!this.stickyGroups) {
       return StickyStyle.None;
     }
-    // 有吸顶搜索框时它和分组头都要吸顶，用 BOTH 让两者叠加
-    return this.stickyHeaderBuilder !== undefined ? StickyStyle.BOTH : StickyStyle.Header;
+    // 固定用 Header。`StickyStyle.BOTH`（API 20 新增）在「吸顶层 + 内容同组」这个
+    // 结构下会让 header 不吸顶，实测过；Header 就够用，本组也没有 footer 要吸。
+    return StickyStyle.Header;
   }
 
   private groupIndexOf(section: Object, sectionIndex: number): string {
@@ -381,13 +385,51 @@ export struct UniList {
     }
   }
 
-  /** 吸顶搜索框：单开一个只有 header、没有 body 的组。 */
+  /**
+   * 吸顶层 + 全部内容，包在**同一个** `ListItemGroup` 里。
+   *
+   * 这是实测出来的唯一可行结构，试错过程记录如下：
+   *
+   * - 「只有 header、没有 body 的组」：`List.sticky` 是「每个组各自吸自己的 header」，
+   *   页面里再有带 header 的分组时，后者的 header 会把它顶掉。
+   * - `ListItem.sticky`：**完全无效**。单独写一个最简 List 验证过，滚动后照样滚走
+   *   （它标了 deprecated since 9，看来确实不再实现）。
+   * - 把内容直接塞进组、组头设成吸顶层：✅ 可行。全局只有一个组，没有被顶替的问题。
+   *
+   * 组内的分组头改用**加粗标题行**而不是嵌套 `ListItemGroup`——组里不能直接嵌组。
+   * 代价是分组头不再有「互相顶替」的吸顶效果，换来搜索框能稳定吸顶。
+   */
   @Builder
   stickyHeaderGroup(): void {
     ListItemGroup({
       header: () => { this.stickyHeaderInner() }
     }) {
+      if (this.groups.length > 0 && this.groupOf !== undefined) {
+        // 分组：标题行 + 该组的数据项
+        ForEach(this.groups, (section: Object, sectionIndex: number) => {
+          ListItem() {
+            this.sectionHeader(section, sectionIndex)
+          }
+          ForEach(this.items, (item: Object, index: number) => {
+            if (this.groupOf !== undefined && this.groupOf(item, index) === sectionIndex) {
+              ListItem() {
+                this.rowContent(item, index)
+              }
+            }
+          }, (item: Object, index: number) => this.keyOf(item, index))
+        }, (section: Object, sectionIndex: number) => this.groupIndexOf(section, sectionIndex))
+      } else {
+        this.plainItems()
+      }
     }
+  }
+
+  /** 不带分组的普通项。 */
+  @Builder
+  plainItems(): void {
+    ForEach(this.items, (item: Object, index: number) => {
+      this.row(item, index)
+    }, (item: Object, index: number) => this.keyOf(item, index))
   }
 
   /** 按 `groupOf` 把拍平的 items 归到各组，用 ListItemGroup 渲染。 */
@@ -412,6 +454,58 @@ export struct UniList {
     }, (section: Object, sectionIndex: number) => this.groupIndexOf(section, sectionIndex))
   }
 
+  /** 列表主体：数据源 / 拖拽 / 分组 / 普通四种渲染方式。 */
+  @Builder
+  bodyItems(): void {
+    if (this.dataSource !== undefined) {
+      LazyForEach(this.dataSource, (item: Object, index: number) => {
+        this.row(item, index)
+      }, (item: Object, index: number) => this.keyOf(item, index))
+    } else if (this.enableDrag && !this.enableSwipe) {
+      // 拖拽的硬约束（SDK 文档原文）：onMove 只在父容器是 List、
+      // 且**每次 ForEach 迭代直接产出 ListItem** 时生效。
+      // 中间隔一层 @Builder（`this.row(...)`）就不满足，所以这里必须是内联的 ListItem。
+      ForEach(this.items, (item: Object, index: number) => {
+        ListItem() {
+          this.rowContent(item, index)
+        }
+      }, (item: Object, index: number) => this.keyOf(item, index))
+        .onMove((from: number, to: number) => {
+          if (this.onItemMove !== undefined) {
+            this.onItemMove(from, to)
+          }
+        }, {
+          // 诊断用：能收到说明长按确实进入了拖拽子系统
+          onLongPress: (index: number) => {
+            if (this.onDragDiagnostic !== undefined) {
+              this.onDragDiagnostic('longPress', index, index)
+            }
+          },
+          onDragStart: (index: number) => {
+            if (this.onDragDiagnostic !== undefined) {
+              this.onDragDiagnostic('dragStart', index, index)
+            }
+          },
+          onMoveThrough: (from: number, to: number) => {
+            if (this.onDragDiagnostic !== undefined) {
+              this.onDragDiagnostic('moveThrough', from, to)
+            }
+          },
+          onDrop: (index: number) => {
+            if (this.onDragDiagnostic !== undefined) {
+              this.onDragDiagnostic('drop', index, index)
+            }
+          }
+        })
+    } else if (this.groups.length > 0 && this.groupOf !== undefined) {
+      this.groupedItems()
+    } else {
+      ForEach(this.items, (item: Object, index: number) => {
+        this.row(item, index)
+      }, (item: Object, index: number) => this.keyOf(item, index))
+    }
+  }
+
   @Builder
   listBody(): void {
     List({ scroller: this.scroller, space: this.card ? this.theme.cardGap : 0 }) {
@@ -423,55 +517,13 @@ export struct UniList {
       ListItem() {
         this.headerInner()
       }
-      // 吸顶区：用「只有 header 的组」实现，滚动时贴住顶部
-      this.stickyHeaderGroup()
 
-      if (this.dataSource !== undefined) {
-        LazyForEach(this.dataSource, (item: Object, index: number) => {
-          this.row(item, index)
-        }, (item: Object, index: number) => this.keyOf(item, index))
-      } else if (this.enableDrag && !this.enableSwipe) {
-        // 拖拽的硬约束（SDK 文档原文）：onMove 只在父容器是 List、
-        // 且**每次 ForEach 迭代直接产出 ListItem** 时生效。
-        // 中间隔一层 @Builder（`this.row(...)`）就不满足，所以这里必须是内联的 ListItem。
-        ForEach(this.items, (item: Object, index: number) => {
-          ListItem() {
-            this.rowContent(item, index)
-          }
-        }, (item: Object, index: number) => this.keyOf(item, index))
-          .onMove((from: number, to: number) => {
-            if (this.onItemMove !== undefined) {
-              this.onItemMove(from, to)
-            }
-          }, {
-            // 诊断用：能收到说明长按确实进入了拖拽子系统
-            onLongPress: (index: number) => {
-              if (this.onDragDiagnostic !== undefined) {
-                this.onDragDiagnostic('longPress', index, index)
-              }
-            },
-            onDragStart: (index: number) => {
-              if (this.onDragDiagnostic !== undefined) {
-                this.onDragDiagnostic('dragStart', index, index)
-              }
-            },
-            onMoveThrough: (from: number, to: number) => {
-              if (this.onDragDiagnostic !== undefined) {
-                this.onDragDiagnostic('moveThrough', from, to)
-              }
-            },
-            onDrop: (index: number) => {
-              if (this.onDragDiagnostic !== undefined) {
-                this.onDragDiagnostic('drop', index, index)
-              }
-            }
-          })
-      } else if (this.groups.length > 0 && this.groupOf !== undefined) {
-        this.groupedItems()
+      // 有吸顶层时：吸顶层和全部内容包在同一个组里（见 stickyHeaderGroup 的说明）。
+      // 没有吸顶层时：走常规分支。
+      if (this.stickyHeaderBuilder !== undefined && this.dataSource === undefined) {
+        this.stickyHeaderGroup()
       } else {
-        ForEach(this.items, (item: Object, index: number) => {
-          this.row(item, index)
-        }, (item: Object, index: number) => this.keyOf(item, index))
+        this.bodyItems()
       }
 
       // 底部状态栏：List 没有 footer 选项，只能作为最后一个 ListItem
