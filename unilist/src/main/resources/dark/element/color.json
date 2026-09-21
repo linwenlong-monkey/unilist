@@ -1,0 +1,15 @@
+{
+  "color": [
+    { "name": "uni_color_bg_page",        "value": "#000000" },
+    { "name": "uni_color_bg_card",        "value": "#1C1C1E" },
+    { "name": "uni_color_bg_elevated",    "value": "#2C2C2E" },
+    { "name": "uni_color_text_primary",   "value": "#E5E5EA" },
+    { "name": "uni_color_text_secondary", "value": "#99E5E5EA" },
+    { "name": "uni_color_text_tertiary",  "value": "#66E5E5EA" },
+    { "name": "uni_color_divider",        "value": "#1AFFFFFF" },
+    { "name": "uni_color_primary",        "value": "#0A84FF" },
+    { "name": "uni_color_danger",         "value": "#FF453A" },
+    { "name": "uni_color_skeleton",       "value": "#1AFFFFFF" },
+    { "name": "uni_color_pressed",        "value": "#1FFFFFFF" }
+  ]
+}

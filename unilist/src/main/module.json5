@@ -1,0 +1,11 @@
+{
+  "module": {
+    "name": "unilist",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet",
+      "2in1"
+    ]
+  }
+}
