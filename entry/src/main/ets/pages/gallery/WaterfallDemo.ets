@@ -1,7 +1,6 @@
 import { UniWaterfall, UniTheme, UniTexts } from 'unilist';
 import { FeedVO, makeFeed } from '../../model/FeedModel';
 
-/** 瀑布流演示：卡片高度不等，验证错落排列且不重叠。 */
 @Component
 export struct WaterfallDemo {
   @Prop theme: UniTheme = UniTheme.standard;
@@ -17,7 +16,6 @@ export struct WaterfallDemo {
   @Builder
   card(item: Object, index: number): void {
     Column() {
-      // 上半部分色块，下半部分文字，模拟图文卡片
       Column()
         .width('100%')
         .layoutWeight(1)
@@ -62,7 +60,6 @@ export struct WaterfallDemo {
           enableRefresh: false,
           enableFloatingTop: true,
           itemKey: (item: Object, index: number) => (item as FeedVO).id,
-          // ⚠️ 箭头函数包裹
           itemHeight: (item: Object, index: number) => (item as FeedVO).height,
           itemBuilder: (item: Object, index: number) => {
             this.card(item, index)

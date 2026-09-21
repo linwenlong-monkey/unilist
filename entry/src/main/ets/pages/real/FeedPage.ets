@@ -1,25 +1,7 @@
 import { UniList, UniTheme, UniTexts } from 'unilist';
-import { makeSections, PICK_PHOTOS, PHOTOS, TripSection, TripVO, HERO_PHOTO } from '../../model/TripModel';
-import { TripGroupHeader, TripHero, TripPickCard, TripRow, TripSearchBar, TripSectionTitle, TripStats } from './TripCards';
+import { makeSections, PHOTOS, TripSection, TripVO, HERO_PHOTO } from '../../model/TripModel';
+import { TripGroupHeader, TripHero, TripRow, TripSearchBar, TripStats } from './TripCards';
 
-/**
- * 实战页：旅行目的地。
- *
- * 这是本工程**嵌套结构最复杂**的页面，用来验证「组件接管容器」能撑住真实场景：
- *
- * ```
- * Refresh（下拉刷新，由 UniList 内置）
- * └─ List（滚动容器，由 UniList 内置；sticky(Header)）
- *    ├─ ListItem          头部：Hero 大图 + 统计行（随滚动移出）
- *    ├─ ListItemGroup ①   header = 吸顶搜索框，body = 「精选推荐」横滑
- *    └─ ListItemGroup ②…N header = 地区名（吸顶），body = 目的地卡片
- * ```
- *
- * 页面里**没有** `List` / `Refresh` / `ForEach` / `ListItem` / `ListItemGroup`。
- *
- * ⚠️ 所有传给库的 `@BuilderParam` 都走 `this.xxx` 方法（不是裸引用、
- * 也不在箭头里直接实例化自定义组件），这是本项目踩出来的硬约束。
- */
 @Component
 export struct FeedPage {
   @Prop theme: UniTheme = UniTheme.standard;
@@ -40,7 +22,6 @@ export struct FeedPage {
     }, 800);
   }
 
-  /** 所有目的地拍平，供 `UniList` 遍历；`itemBuilder` 再按 id 反查所属分组。 */
   private allTrips(): TripVO[] {
     const out: TripVO[] = [];
     for (let i = 0; i < this.sections.length; i++) {
@@ -60,8 +41,6 @@ export struct FeedPage {
     }
     return n;
   }
-
-  // ================= 构建器 =================
 
   /** 头部：Hero 大图 + 统计行。随列表滚动移出。 */
   @Builder

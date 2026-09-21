@@ -13,8 +13,6 @@ import { UniLoadGuard } from './internal/UniLoadGuard';
  *
  * 折叠状态用 `boolean[]` 而不是 `Set`——ArkTS 的 `@State` 对 `Set` 的增删改观测不可靠，
  * 用数组才能保证界面跟着变。
- *
- * ⚠️ `itemBuilder` / `headerBuilder` **必须用箭头函数包裹**，原因见 `UniList`。
  */
 @Component
 export struct UniGroupList {

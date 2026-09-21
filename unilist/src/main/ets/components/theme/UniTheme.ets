@@ -7,9 +7,6 @@ import { UniRes } from './UniRes';
  * 自动切换到 `resources/dark` 下的同名资源，所以**默认主题天然支持深色模式**，
  * 调用方不需要为暗色做任何事。
  *
- * 想定制时构造一个实例、覆盖需要的字段，再通过 `theme` 传入即可。颜色字段是
- * `ResourceColor`（`Color | number | string | Resource`），所以既可以给 `'#FF0000'`，
- * 也可以给 `$r('app.color.xxx')`。
  */
 export class UniTheme {
   // ---------- 颜色 ----------

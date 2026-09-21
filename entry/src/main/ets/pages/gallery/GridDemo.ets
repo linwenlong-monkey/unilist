@@ -1,7 +1,6 @@
 import { UniGrid, UniTheme, UniTexts } from 'unilist';
 import { FeedVO, makeFeed } from '../../model/FeedModel';
 
-/** 网格演示：列数可以实时改，验证 `UniGrid.columns` 真的生效。 */
 @Component
 export struct GridDemo {
   @Prop theme: UniTheme = UniTheme.standard;

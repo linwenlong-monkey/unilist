@@ -12,8 +12,6 @@ import { UniLoadGuard } from './internal/UniLoadGuard';
  * 与 {@link UniList} 同构，差别只在滚动容器是 `Grid`。注意
  * {@link columns} 是真的生效的——旧版本这个属性声明了却从未被 `build()` 使用，
  * 调用方传多少列都落进黑洞，实际列数由自己手写的 `columnsTemplate` 决定。
- *
- * ⚠️ `itemBuilder` **必须用箭头函数包裹**，原因见 {@link UniList}。
  */
 @Component
 export struct UniGrid {

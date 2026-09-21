@@ -2,13 +2,6 @@ import { UniSwipeAction, UniSwipeItem, UniTheme, UniTexts } from 'unilist';
 import { FeedVO, makeFeed } from '../../model/FeedModel';
 import { CardRow } from './CardRow';
 
-/**
- * 侧滑演示。
- *
- * 这里**直接用 `UniSwipeItem` 包住行**，用来展示它的独立用法——调用方只需要写
- * 「一行长什么样」，`ListItem` 由 `UniSwipeItem` 自己产出。
- * （另一种用法是交给 `UniList({ enableSwipe: true })` 托管，见列表演示页。）
- */
 @Component
 export struct SwipeDemo {
   @Prop theme: UniTheme = UniTheme.standard;

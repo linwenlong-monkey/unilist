@@ -1,15 +1,7 @@
-/**
- * 旅行实战页的数据模型。
- *
- * 图片走 `$r('app.media.imgN')` —— 资源是打包期解析的，**必须写成字面量**，
- * 不能拼字符串，所以这里用数组下标直接取。
- */
 
-/** 一张已打包的风景图。 */
+
 export class TripPhoto {
-  /** 资源引用 */
   res: Resource;
-  /** 无障碍描述 / 图片说明 */
   caption: string;
 
   constructor(res: Resource, caption: string) {
@@ -18,7 +10,6 @@ export class TripPhoto {
   }
 }
 
-/** 8 张内置风景图。 */
 export const PHOTOS: TripPhoto[] = [
   new TripPhoto($r('app.media.img1'), '雪山湖泊'),
   new TripPhoto($r('app.media.img2'), '森林小径'),
@@ -30,24 +21,15 @@ export const PHOTOS: TripPhoto[] = [
   new TripPhoto($r('app.media.img8'), '热带海滩')
 ];
 
-/** 一个目的地。 */
 export class TripVO {
   id: string;
-  /** 目的地名 */
   name: string;
-  /** 一句话卖点 */
   tagline: string;
-  /** 行程天数 */
   days: number;
-  /** 评分 */
   rating: number;
-  /** 起步价 */
   price: number;
-  /** 卡片图下标 */
   photo: number;
-  /** 详情页轮播图的图下标集合 */
   gallery: number[];
-  /** 详情页的行程亮点 */
   highlights: string[];
 
   constructor(id: string, name: string, tagline: string, days: number, rating: number,
@@ -64,7 +46,6 @@ export class TripVO {
   }
 }
 
-/** 一个地区分组。 */
 export class TripSection {
   title: string;
   subtitle: string;
@@ -77,13 +58,10 @@ export class TripSection {
   }
 }
 
-/** 首页头部那张大图。 */
 export const HERO_PHOTO: number = 0;
 
-/** 「精选推荐」里的图下标。 */
 export const PICK_PHOTOS: number[] = [1, 2, 3, 4];
 
-/** 所有分组。 */
 export function makeSections(): TripSection[] {
   return [
     new TripSection('亚洲', '东方的四季与人情', [
@@ -107,7 +85,6 @@ export function makeSections(): TripSection[] {
   ];
 }
 
-/** 拼一个「N 天 M 晚」的行程文案。 */
 export function tripMeta(t: TripVO): string {
   return `${t.days} 天 ${t.days - 1} 晚`;
 }

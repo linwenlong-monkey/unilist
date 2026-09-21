@@ -12,7 +12,7 @@ export type UniFlowHeight = (item: Object, index: number) => number;
 /**
  * 瀑布流。
  *
- * ⚠️ `FlowItem` **必须显式设置 height**，布局引擎靠它计算每张卡片的位置；只在内部
+ * `FlowItem` **必须显式设置 height**，布局引擎靠它计算每张卡片的位置；只在内部
  * 组件上设高度会导致卡片重叠。这是本工程踩过的坑，组件内已严格遵守：
  * 见 {@link flowCell} 上挂的 `.height(...)`，内部组件一律用 `height('100%')` 填充。
  *

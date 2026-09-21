@@ -3,7 +3,6 @@ import { FeedVO, makeFeed } from '../../model/FeedModel';
 import { CardRow } from './CardRow';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-/** 列表演示：下拉刷新 + 触底加载 + 侧滑 + 拖拽 + 浮动按钮。 */
 @Component
 export struct ListDemo {
   @Prop theme: UniTheme = UniTheme.standard;
@@ -16,7 +15,6 @@ export struct ListDemo {
   @State enableDrag: boolean = false;
   @State tip: string = '';
   private page: number = 1;
-  /** 用来让每页数据长得不一样，刷新后能肉眼看出确实换了 */
   private seed: number = 0;
 
   aboutToAppear(): void {
@@ -27,12 +25,6 @@ export struct ListDemo {
     }, 900);
   }
 
-  /**
-   * ⚠️ 必须经由 `@Builder` 方法再调全局 `@Builder`（CardRow）。
-   * 直接在传出去的箭头函数体里写 `CardRow(...)` 会抛
-   * `Cannot read property observeComponentCreation2 of undefined`——
-   * 箭头函数体不是组件的构建作用域，拿不到渲染上下文。
-   */
   @Builder
   cardRow(item: Object, index: number): void {
     CardRow(item as FeedVO, this.theme)
@@ -128,7 +120,6 @@ export struct ListDemo {
               this.tip = `已把第 ${from + 1} 项移到第 ${to + 1} 位`;
             },
             itemBuilder: (item: Object, index: number) => {
-              // ⚠️ 箭头函数包裹 + 经由 @Builder 方法，两者缺一不可
               this.cardRow(item, index)
             }
           })

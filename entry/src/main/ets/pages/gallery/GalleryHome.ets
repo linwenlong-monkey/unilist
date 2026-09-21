@@ -14,16 +14,9 @@ class GalleryEntry {
   }
 }
 
-/**
- * 组件画廊首页。
- *
- * 用一个**自己搭的朴素列表**（而非 `UniList`）来放导航项——这样即使 `UniList`
- * 本身出问题，也还能进到各个演示页去定位，不会把自己锁死。
- */
 @Component
 export struct GalleryHome {
   @Prop theme: UniTheme = UniTheme.standard;
-  /** 来自外层 `Navigation` 的栈，用 `@Consume` 取到同一个实例 */
   @Consume('uniPathStack') pathStack: NavPathStack;
 
   private entries: GalleryEntry[] = [

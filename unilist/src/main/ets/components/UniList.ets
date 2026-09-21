@@ -19,7 +19,7 @@ import { UniLoadGuard } from './internal/UniLoadGuard';
  * - {@link dataSource} `IDataSource`，内部用 `LazyForEach`，适合大数据量，
  *   并且支持增量通知（`notifyDataAdd` 等）而不触发全量重建。
  *
- * ⚠️ `itemBuilder` **必须用箭头函数包裹**：
+ *`itemBuilder` **必须用箭头函数包裹**：
  * ```ts
  * // 正确 —— 箭头函数词法捕获父组件的 this
  * UniList({ items: this.items, itemBuilder: (item, i) => { this.row(item, i) } })

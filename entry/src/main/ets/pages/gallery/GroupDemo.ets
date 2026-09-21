@@ -1,7 +1,6 @@
 import { IUniSection, UniGroupList, UniTheme, UniTexts } from 'unilist';
 import { FeedVO, makeSections, SectionData } from '../../model/FeedModel';
 
-/** 分组演示：吸顶 / 折叠 / 索引条三个开关可切换。 */
 @Component
 export struct GroupDemo {
   @Prop theme: UniTheme = UniTheme.standard;

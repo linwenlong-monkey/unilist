@@ -23,7 +23,6 @@ struct Demo {
   @State items: Goods[] = [];
   @State hasMore: boolean = true;
 
-  // ⚠️ 必须写成 @Builder 方法，且在 itemBuilder 里经由它调用
   @Builder
   row(item: Object, index: number): void {
     Text((item as Goods).name).fontSize(16)
@@ -45,17 +44,17 @@ struct Demo {
 
 页面里**不再出现** `List` / `Refresh` / `ForEach` / `ListItem`。
 
-## ⚠️ 两条必须遵守的写法
+## 两条必须遵守的写法
 
 这两条都是运行期才会炸、编译期完全不报错的坑，踩过一次就够了。
 
 ### 1. `itemBuilder` 必须用箭头函数包裹，不能传裸引用
 
 ```ts
-// ✅ 正确：箭头函数词法捕获父组件的 this
+// 正确：箭头函数词法捕获父组件的 this
 UniList({ items: this.items, itemBuilder: (item, i) => { this.row(item, i) } })
 
-// ❌ 错误：传裸引用时，组件内调用它的 this 会绑到子组件上
+// 错误：传裸引用时，组件内调用它的 this 会绑到子组件上
 UniList({ items: this.items, itemBuilder: this.row })
 ```
 

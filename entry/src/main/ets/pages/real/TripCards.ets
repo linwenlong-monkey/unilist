@@ -1,14 +1,5 @@
 import { UniTheme } from 'unilist';
-import { PHOTOS, TripPhoto, TripVO, tripMeta } from '../../model/TripModel';
-
-/**
- * 旅行页用到的各个卡片。
- *
- * 全部写成**全局 `@Builder` 函数**，原因见 `gallery/CardRow.ets`：
- * 在 `@BuilderParam` / `headerBuilder` 里实例化自定义组件会运行期崩溃，
- * 而这些区块都只是「画一堆内置组件」，用全局 @Builder 既够用又安全。
- * 代价是拿不到 `this`，所有数据必须由参数传进来。
- */
+import { PHOTOS, TripVO, tripMeta } from '../../model/TripModel';
 
 /** Hero 大图：整幅铺满，底部渐变压暗后再压白色标题。 */
 @Builder
@@ -20,7 +11,6 @@ export function TripHero(theme: UniTheme, photoIndex: number, title: string, sub
       .objectFit(ImageFit.Cover)
       .interpolation(ImageInterpolation.High)
 
-    // 由透明到黑的渐变，保证白字在任何图上都能看清
     Column()
       .width('100%')
       .height('100%')
@@ -115,7 +105,6 @@ export function TripSearchBar(theme: UniTheme) {
   .borderRadius(SEARCH_BAR_RADIUS)
   .backgroundColor(theme.bgCard)
   .alignItems(VerticalAlign.Center)
-  // 吸顶时下方会盖住内容，用一圈投影把它和列表区分开
   .shadow({ radius: 6, color: '#14000000', offsetX: 0, offsetY: 2 })
 }
 
@@ -225,7 +214,6 @@ export function TripRow(theme: UniTheme, trip: TripVO) {
 @Builder
 export function TripGroupHeader(theme: UniTheme, title: string, subtitle: string, count: number) {
   Row() {
-    // 左侧主题色竖条，比纯文字更有分组感
     Column()
       .width(3)
       .height(28)
@@ -255,7 +243,6 @@ export function TripGroupHeader(theme: UniTheme, title: string, subtitle: string
   .width('100%')
   .height(56)
   .padding({ left: 14, right: 14 })
-  // 吸顶时必须是不透明底色，否则会透出下面的内容
   .backgroundColor(theme.bgPage)
   .alignItems(VerticalAlign.Center)
 }

@@ -2,12 +2,7 @@ import { UniItemKey, UniList, UniTheme, UniTexts } from 'unilist';
 import { FeedVO, makeFeed } from '../../model/FeedModel';
 import { CardRow } from './CardRow';
 
-/**
- * `IDataSource` 的最小实现。
- *
- * `LazyForEach` 会自己调用 `registerDataChangeListener` 订阅变化，所以数据源
- * **不需要**任何状态装饰器——这也是 `UniList.dataSource` 刻意不标 `@Prop` 的原因。
- */
+
 class FeedDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
   private data: FeedVO[] = [];
@@ -37,7 +32,6 @@ class FeedDataSource implements IDataSource {
     }
   }
 
-  /** 追加一批数据，只通知新增的那一段，不重建整个列表。 */
   append(more: FeedVO[]): void {
     const start = this.data.length;
     this.data = this.data.concat(more);
@@ -46,7 +40,6 @@ class FeedDataSource implements IDataSource {
     }
   }
 
-  /** 从头部插入一批。 */
   prependAt(more: FeedVO[]): void {
     this.data = more.concat(this.data);
     for (let i = 0; i < this.listeners.length; i++) {
@@ -63,10 +56,7 @@ class FeedDataSource implements IDataSource {
 }
 
 /**
- * 大数据量演示：2000 条数据走 `LazyForEach`，只渲染视口内的行。
- *
- * 同时演示**增量通知**——「头部插入」只触发 `onDataAdd`，不会重建整个列表，
- * 这是普通数组（`items` 路径）做不到的。
+ * 大数据量演示：2000 条数据走 `LazyForEach`。
  */
 @Component
 export struct LazyDemo {
@@ -84,11 +74,6 @@ export struct LazyDemo {
 
   private keyOf: UniItemKey = (item: Object, index: number) => (item as FeedVO).id;
 
-  /**
-   * ⚠️ 必须经由 `@Builder` 方法再调全局 `@Builder`（CardRow）。
-   * 直接在传出去的箭头函数体里写 `CardRow(...)` 会抛
-   * `Cannot read property observeComponentCreation2 of undefined`。
-   */
   @Builder
   cardRow(item: Object, index: number): void {
     CardRow(item as FeedVO, this.theme)
@@ -134,7 +119,6 @@ export struct LazyDemo {
         }
 
         UniList({
-          // dataSource 优先级高于 items，走 LazyForEach
           dataSource: this.dataSource,
           theme: this.theme,
           texts: UniTexts.standard,

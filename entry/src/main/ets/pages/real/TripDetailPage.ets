@@ -1,17 +1,11 @@
 import { UniTheme } from 'unilist';
 import { PHOTOS, TripVO, tripMeta } from '../../model/TripModel';
 
-/**
- * 目的地详情页。
- *
- * 结构：Hero 大图（可左右滑动看多张）→ 标题信息 → 行程亮点 → 底部固定操作栏。
- * 用 `Scroll` 而非 `List`——这里内容量固定、不需要回收。
- */
+
 @Component
 export struct TripDetailPage {
   @Prop theme: UniTheme = UniTheme.standard;
   @Consume('uniPathStack') pathStack: NavPathStack;
-  /** 由 `pageMap` 传入的目的地 */
   @Prop trip: TripVO = new TripVO('', '', '', 0, 0, 0, 0, [], []);
   @State favorited: boolean = false;
 
