@@ -1,6 +1,5 @@
 {
   "src": [
-    "pages/__Probe",
     "pages/Index"
   ]
 }
